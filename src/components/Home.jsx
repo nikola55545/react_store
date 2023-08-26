@@ -11,8 +11,7 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import {addToCart, removeFromCart} from '../actions/cartActions';
-import {Box, InputAdornment, TextField} from "@mui/material";
-import {AccountCircle} from "@mui/icons-material";
+import {Box, TextField} from "@mui/material";
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -36,17 +35,6 @@ const Home = () => {
             })
             .finally(() => {
                 setIsLoading(false); // Set loading to false after fetching
-            });
-
-        axios.get('https://dummyjson.com/products/categories')
-            .then(response => {
-                setCategories(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching categories:', error);
-            })
-            .finally(() => {
-                setIsLoading(false);
             });
     }, []);
 
