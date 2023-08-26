@@ -20,7 +20,6 @@ const Home = () => {
     const cartItems = useSelector(state => state.cartItems); // Get cart items from the state
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
-    const [categories, setCategories] = useState([]);
 
     const filteredProducts = products.products?.filter(product =>
         product.title.toLowerCase().includes(searchQuery.toLowerCase())
