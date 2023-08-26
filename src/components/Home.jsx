@@ -11,7 +11,8 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import {addToCart, removeFromCart} from '../actions/cartActions';
-import {Box, TextField} from "@mui/material";
+import {Box, InputAdornment, TextField} from "@mui/material";
+import {AccountCircle} from "@mui/icons-material";
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -19,11 +20,11 @@ const Home = () => {
     const cartItems = useSelector(state => state.cartItems); // Get cart items from the state
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [categories, setCategories] = useState([]);
 
     const filteredProducts = products.products?.filter(product =>
         product.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
 
     useEffect(() => {
         setIsLoading(true); // Set loading to true before fetching
@@ -36,6 +37,17 @@ const Home = () => {
             })
             .finally(() => {
                 setIsLoading(false); // Set loading to false after fetching
+            });
+
+        axios.get('https://dummyjson.com/products/categories')
+            .then(response => {
+                setCategories(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     }, []);
 
@@ -51,9 +63,10 @@ const Home = () => {
                     id="outlined-basic"
                     label="Search..."
                     variant="outlined"
-                    fullWidth={true}
+                    sx={{ width: 300 }}
                     onChange={(event) => setSearchQuery(event.target.value)}
                 />
+
             </Box>
             {isLoading ? (
                 <div>Loading...</div>
