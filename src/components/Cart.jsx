@@ -36,7 +36,7 @@ const Cart = () => {
 
     return (
         <div>
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', gap: 8, color: 'blue' }}>
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', gap: 8, color: '#0E6BCE' }}>
                 <ArrowBackIcon /> Back to Store
             </Link>
             <h1>Cart</h1>

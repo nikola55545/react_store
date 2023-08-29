@@ -10,7 +10,8 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {addToCart, addToFavorites, removeFromCart, removeFromFavorites} from '../actions/cartActions';
-import {Box, IconButton, Pagination, TextField} from '@mui/material';
+import {Box, IconButton, InputAdornment, MenuItem, Pagination, TextField} from '@mui/material';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
 
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -22,10 +23,13 @@ const Home = () => {
     const cartItems = useSelector(state => state.cartItems);
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 10;
+    const productsPerPage = 12;
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchText, setSearchText] = useState('');
     const favoriteItems = useSelector(state => state.favorites);
+    const [categories, setCategories] = useState([]);
+    const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     const isItemInFavorites = (productId) => {
         return favoriteItems.includes(productId);
@@ -39,6 +43,13 @@ const Home = () => {
         }
     };
 
+
+    const handleCategoryChange = (event) => {
+        const selectedCategory = event.target.value;
+        setSelectedCategory(selectedCategory);
+    };
+
+
     useEffect(() => {
         setIsLoading(true);
 
@@ -46,18 +57,21 @@ const Home = () => {
             .then(response => {
                 const productsList = response.data.products;
 
-                // Filter products based on search text
                 const filteredList = searchText
                     ? productsList.filter(product =>
                         product.title.toLowerCase().includes(searchText.toLowerCase())
                     )
                     : productsList;
 
-                setProducts(filteredList);
+                const categoryFilteredList = selectedCategory
+                    ? filteredList.filter(product => product.category === selectedCategory)
+                    : filteredList;
+
+                setProducts(categoryFilteredList);
 
                 const startIndex = (currentPage - 1) * productsPerPage;
                 const endIndex = startIndex + productsPerPage;
-                const slicedProducts = filteredList.slice(startIndex, endIndex);
+                const slicedProducts = categoryFilteredList.slice(startIndex, endIndex);
 
                 setFilteredProducts(slicedProducts);
                 setIsLoading(false);
@@ -66,7 +80,8 @@ const Home = () => {
                 console.error('Error fetching data:', error);
                 setIsLoading(false);
             });
-    }, [currentPage, searchText]);
+    }, [currentPage, searchText, selectedCategory]);
+
 
 
     const isItemInCart = (productId) => {
@@ -75,25 +90,56 @@ const Home = () => {
 
     return (
         <div>
-            <TextField
-                label="Search products"
-                variant="outlined"
-                value={searchText}
-                onChange={event => setSearchText(event.target.value)}
-                fullWidth
-                style={{ marginBottom: 20 }}
-            />
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                gap: 20,
+                flexDirection: 'row',
+            }}>
+                <TextField
+                    label="Search products"
+                    variant="outlined"
+                    value={searchText}
+                    onChange={event => setSearchText(event.target.value)}
+                    fullWidth={true}
+                    style={{marginBottom: 48}}
+                />
+
+                <TextField
+                    select
+                    value={selectedCategory}
+                    onChange={handleCategoryChange}
+                    label="Categories"
+                    sx={{
+                        minWidth: 240,
+                    }}
+                >
+                    <MenuItem value="">All Categories</MenuItem>
+                    {isLoadingCategories ? (
+                        <MenuItem value="">Loading...</MenuItem>
+                    ) : (
+                        categories.map(category => (
+                            <MenuItem key={category} value={category}>
+                                {category}
+                            </MenuItem>
+                        ))
+                    )}
+                </TextField>
+
+
+            </div>
 
             {isLoading ? (
                 <div>Loading...</div>
             ) : (
 
-                <Grid container spacing={2} justifyContent="center">
+                <Grid container spacing={2} justifyContent="flex-start">
                     {filteredProducts.length === 0 ? (
                         <div>No items found.</div>
                     ) : (
                         filteredProducts.map(product => (
-                            <Grid item xs={12} sm={6} md={4} lg={2} key={product.id}>
+                            <Grid item xs={12} sm={4} md={4} lg={2} key={product.id}>
                                 <Card sx={{maxWidth: 350}}>
                                     <CardMedia
                                         sx={{height: 140}}
@@ -115,9 +161,9 @@ const Home = () => {
                                             onClick={() => handleFavoriteToggle(product.id)}
                                         >
                                             {isItemInFavorites(product.id) ? (
-                                                <FavoriteIcon color="error" />
+                                                <FavoriteIcon color="error"/>
                                             ) : (
-                                                <FavoriteBorderIcon />
+                                                <FavoriteBorderIcon/>
                                             )}
                                         </IconButton>
                                         {isItemInCart(product.id) ? (

@@ -9,7 +9,6 @@ import cartReducer from './reducers/cartReducer'; // Import your cart reducer
 
 const store = createStore(cartReducer);
 
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
