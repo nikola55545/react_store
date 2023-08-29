@@ -20,6 +20,8 @@ const Home = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 10;
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [searchText, setSearchText] = useState('');
+
 
     useEffect(() => {
         setIsLoading(true);
@@ -27,11 +29,19 @@ const Home = () => {
         axios.get('https://dummyjson.com/products')
             .then(response => {
                 const productsList = response.data.products;
-                setProducts(productsList);
+
+                // Filter products based on search text
+                const filteredList = searchText
+                    ? productsList.filter(product =>
+                        product.title.toLowerCase().includes(searchText.toLowerCase())
+                    )
+                    : productsList;
+
+                setProducts(filteredList);
 
                 const startIndex = (currentPage - 1) * productsPerPage;
                 const endIndex = startIndex + productsPerPage;
-                const slicedProducts = productsList.slice(startIndex, endIndex);
+                const slicedProducts = filteredList.slice(startIndex, endIndex);
 
                 setFilteredProducts(slicedProducts);
                 setIsLoading(false);
@@ -40,7 +50,8 @@ const Home = () => {
                 console.error('Error fetching data:', error);
                 setIsLoading(false);
             });
-    }, [currentPage]);
+    }, [currentPage, searchText]);
+
 
     const isItemInCart = (productId) => {
         return cartItems.some(item => item.id === productId);
@@ -48,15 +59,26 @@ const Home = () => {
 
     return (
         <div>
+            <TextField
+                label="Search products"
+                variant="outlined"
+                value={searchText}
+                onChange={event => setSearchText(event.target.value)}
+                fullWidth
+                style={{ marginBottom: 20 }}
+            />
+
             {isLoading ? (
                 <div>Loading...</div>
             ) : (
+
                 <Grid container spacing={2} justifyContent="center">
                     {filteredProducts.length === 0 ? (
                         <div>No items found.</div>
                     ) : (
                         filteredProducts.map(product => (
-                            <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+
+                            <Grid item xs={12} sm={6} md={4} lg={2} key={product.id}>
                                 <Card sx={{maxWidth: 350}}>
                                     <CardMedia
                                         sx={{height: 140}}
@@ -92,6 +114,7 @@ const Home = () => {
                                     </CardActions>
                                 </Card>
                             </Grid>
+
                         ))
                     )}
                 </Grid>
@@ -110,6 +133,7 @@ const Home = () => {
                         color="primary"
                         size="large"
                     />
+
                 </div>
             )}
         </div>
