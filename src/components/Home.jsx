@@ -9,8 +9,12 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {addToCart, removeFromCart} from '../actions/cartActions';
-import {Box, Pagination, TextField} from '@mui/material';
+import {addToCart, addToFavorites, removeFromCart, removeFromFavorites} from '../actions/cartActions';
+import {Box, IconButton, Pagination, TextField} from '@mui/material';
+
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
 
 const Home = () => {
     const [products, setProducts] = useState([]);
@@ -21,7 +25,19 @@ const Home = () => {
     const productsPerPage = 10;
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [searchText, setSearchText] = useState('');
+    const favoriteItems = useSelector(state => state.favorites);
 
+    const isItemInFavorites = (productId) => {
+        return favoriteItems.includes(productId);
+    };
+
+    const handleFavoriteToggle = (productId) => {
+        if (isItemInFavorites(productId)) {
+            dispatch(removeFromFavorites(productId));
+        } else {
+            dispatch(addToFavorites(productId));
+        }
+    };
 
     useEffect(() => {
         setIsLoading(true);
@@ -77,7 +93,6 @@ const Home = () => {
                         <div>No items found.</div>
                     ) : (
                         filteredProducts.map(product => (
-
                             <Grid item xs={12} sm={6} md={4} lg={2} key={product.id}>
                                 <Card sx={{maxWidth: 350}}>
                                     <CardMedia
@@ -95,6 +110,16 @@ const Home = () => {
                                     </CardContent>
                                     <CardActions sx={{display: 'flex', justifyContent: 'space-between'}}>
                                         <Typography>{product.price}$</Typography>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => handleFavoriteToggle(product.id)}
+                                        >
+                                            {isItemInFavorites(product.id) ? (
+                                                <FavoriteIcon color="error" />
+                                            ) : (
+                                                <FavoriteBorderIcon />
+                                            )}
+                                        </IconButton>
                                         {isItemInCart(product.id) ? (
                                             <Button
                                                 size="small"
@@ -104,17 +129,19 @@ const Home = () => {
                                                 <DeleteIcon/>
                                             </Button>
                                         ) : (
-                                            <Button
-                                                size="small"
-                                                onClick={() => dispatch(addToCart(product))}
-                                            >
-                                                Add to Cart
-                                            </Button>
+                                            <>
+                                                <Button
+                                                    size="small"
+                                                    onClick={() => dispatch(addToCart(product))}
+                                                >
+                                                    Add to Cart
+                                                </Button>
+
+                                            </>
                                         )}
                                     </CardActions>
                                 </Card>
                             </Grid>
-
                         ))
                     )}
                 </Grid>
