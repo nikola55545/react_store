@@ -54,11 +54,11 @@ const Cart = () => {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell align="center">Image</TableCell>
-                                        <TableCell align="center">Name</TableCell>
-                                        <TableCell align="center">Price</TableCell>
-                                        <TableCell align="center">Quantity</TableCell>
-                                        <TableCell align="center"></TableCell>
+                                        <TableCell align="center" style={{width: '20%'}}>Image</TableCell>
+                                        <TableCell align="center" style={{width: '20%'}}>Name</TableCell>
+                                        <TableCell align="center" style={{width: '20%'}}>Price</TableCell>
+                                        <TableCell align="center" style={{width: '20%'}}>Quantity</TableCell>
+                                        <TableCell align="center" style={{width: '20%'}}>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -84,8 +84,12 @@ const Cart = () => {
                                                     <input value={quantity} style={{
                                                         width: 20,
                                                         textAlign: "center",
-                                                        border: 'none',
+                                                        paddingInline: 16,
+                                                        paddingTop: 16,
+                                                        paddingBottom: 16,
                                                         marginInline: 10,
+                                                        border: "1px solid lightgray",
+                                                        borderRadius: 4,
                                                     }}/>
                                                     <Button
                                                         size="small"
