@@ -27,7 +27,7 @@ const cartReducer = (state = initialState, action) => {
         case 'REMOVE_FROM_FAVORITES':
             return {
                 ...state,
-                favorites: state.favorites.filter(item => item !== action.payload)
+                favorites: state.favorites.filter(item => item.id !== action.payload.id)
             };
 
         default:

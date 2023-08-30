@@ -31,24 +31,10 @@ const Home = () => {
     const [isLoadingCategories, setIsLoadingCategories] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState('');
 
-    const isItemInFavorites = (productId) => {
-        return favoriteItems.includes(productId);
-    };
-
-    const handleFavoriteToggle = (productId) => {
-        if (isItemInFavorites(productId)) {
-            dispatch(removeFromFavorites(productId));
-        } else {
-            dispatch(addToFavorites(productId));
-        }
-    };
-
-
     const handleCategoryChange = (event) => {
         const selectedCategory = event.target.value;
         setSelectedCategory(selectedCategory);
     };
-
 
     useEffect(() => {
         setIsLoading(true);
@@ -56,6 +42,7 @@ const Home = () => {
         axios.get('https://dummyjson.com/products')
             .then(response => {
                 const productsList = response.data.products;
+
 
                 const filteredList = searchText
                     ? productsList.filter(product =>
@@ -75,6 +62,7 @@ const Home = () => {
 
                 setFilteredProducts(slicedProducts);
                 setIsLoading(false);
+                setIsLoadingCategories(false);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -86,6 +74,9 @@ const Home = () => {
 
     const isItemInCart = (productId) => {
         return cartItems.some(item => item.id === productId);
+    };
+    const isItemInFavorites = (productId) => {
+        return favoriteItems.some(item => item.id === productId);
     };
 
     return (
@@ -156,16 +147,25 @@ const Home = () => {
                                     </CardContent>
                                     <CardActions sx={{display: 'flex', justifyContent: 'space-between'}}>
                                         <Typography>{product.price}$</Typography>
-                                        <IconButton
-                                            size="small"
-                                            onClick={() => handleFavoriteToggle(product.id)}
-                                        >
-                                            {isItemInFavorites(product.id) ? (
-                                                <FavoriteIcon color="error"/>
-                                            ) : (
-                                                <FavoriteBorderIcon/>
-                                            )}
-                                        </IconButton>
+                                        {isItemInFavorites(product.id) ? (
+                                            <IconButton
+                                                size="small"
+                                                onClick={() => dispatch(removeFromFavorites(product))}
+                                                color="error"
+                                            >
+                                                <FavoriteIcon/>
+                                            </IconButton>
+                                        ) : (
+                                            <>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={() => dispatch(addToFavorites(product))}
+                                                >
+                                                    <FavoriteBorderIcon/>
+                                                </IconButton>
+
+                                            </>
+                                        )}
                                         {isItemInCart(product.id) ? (
                                             <Button
                                                 size="small"
